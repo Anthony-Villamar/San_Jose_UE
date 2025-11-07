@@ -37,7 +37,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     return;
   }
   try {
-    const response = await fetch("/api/login", {
+    const response = await fetch("https://sanjoseue.vercel.app/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

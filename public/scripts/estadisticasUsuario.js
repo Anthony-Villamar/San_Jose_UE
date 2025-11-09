@@ -145,7 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 🔽 Mostrar mensajes motivacionales con OpenAI
-    mostrarMensajesMotivacionales(detalle);
+    if(detalle.promedio_puntualidad != null && detalle.promedio_trato != null && detalle.promedio_resolucion != null){
+      mostrarMensajesMotivacionales(detalle);
+    }
 
   } catch (err) {
     console.error(err);

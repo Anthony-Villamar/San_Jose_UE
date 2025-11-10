@@ -56,6 +56,18 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
   const contrasena = document.getElementById('contrasenaNuevo').value.trim();
   const rol = document.getElementById('rol').value;
 
+  const regexUsuario = /^[a-zA-Z]+$/;
+  if (!regexUsuario.test(usuario)) {
+    alert('El usuario solo puede contener letras.');
+    return;
+  }
+
+  const regexContrasena = /^[a-zA-Z0-9]+$/;
+  if (!regexContrasena.test(contrasena)) {
+    alert('La contraseña solo puede contener letras y números.');
+    return;
+  }
+
   if (!cedula || !nombre || !apellido || !correo || !telefono || !usuario || !contrasena || !rol) {
     Swal.fire({
       icon: 'warning',

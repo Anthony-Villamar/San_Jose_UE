@@ -59,6 +59,20 @@ document.getElementById('actualizarForm').addEventListener('submit', async (e) =
   const usuario = document.getElementById('usuarioActualizar').value.trim();
   const contrasena = document.getElementById('contrasenaActualizar').value.trim();
 
+
+
+  const regexUsuario = /^[a-zA-Z]+$/;
+  if (!regexUsuario.test(usuario)) {
+    alert('El usuario solo puede contener letras.');
+    return;
+  }
+
+  const regexContrasena = /^[a-zA-Z0-9]+$/;
+  if (!regexContrasena.test(contrasena)) {
+    alert('La contraseña solo puede contener letras y números.');
+    return;
+  }
+
   if (nombre) datosActualizar.nombre = nombre;
   if (apellido) datosActualizar.apellido = apellido;
   if (correo) datosActualizar.correo = correo;

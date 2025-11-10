@@ -40,19 +40,38 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 🔽 Mostrar TOP 3 de atención
   try {
-  const res = await fetch('/api/estadisticas/top3', { credentials: 'include' });
-  const top = await res.json();
+    const res = await fetch('/api/estadisticas/top3', { credentials: 'include' });
+    const top = await res.json();
 
-  const container = document.getElementById('topAtenciones');
-  container.innerHTML = '';
-  container.classList.add('cards-container');
+    const container = document.getElementById('topAtenciones');
+    container.innerHTML = '';
+    container.classList.add('cards-container');
 
-  top.forEach((entry, index) => {
-    const div = document.createElement('div');
-    div.classList.add('card');
-    div.id = `top${index + 1}`;
+    // decide layout por cantidad de ítems (sólo aplica en pantallas >=992px)
+    const isDesktop = window.matchMedia('(min-width: 992px)').matches;
+    if (isDesktop) {
+      if (top.length === 1) {
+        // una tarjeta: una columna centrada y con ancho controlado por max-width de .card
+        container.style.gridTemplateColumns = 'minmax(320px, 600px)';
+        container.style.justifyContent = 'center';
+      } else if (top.length === 2) {
+        // dos tarjetas: dos columnas iguales, centradas
+        container.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        container.style.justifyContent = 'center';
+      } else {
+        // tres o más: 3 columnas
+        container.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+        container.style.justifyContent = 'normal';
+      }
+    }
 
-    div.innerHTML = `
+
+    top.forEach((entry, index) => {
+      const div = document.createElement('div');
+      div.classList.add('card');
+      div.id = `top${index + 1}`;
+
+      div.innerHTML = `
       <div class="card-inner">
         <div class="card-front">
           <img class="imagen1" src="../images/foto_personal" alt="Foto" />
@@ -66,73 +85,73 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       </div>
     `;
-    container.appendChild(div);
+      container.appendChild(div);
 
-    // === Gráfico de barras compacto ===
-    const ctx = div.querySelector(`#graficoTopBar${index + 1}`).getContext('2d');
-    const color = [
-      { fondo: 'rgba(255, 99, 132, 0.4)', borde: 'rgb(255, 99, 132)' },
-      { fondo: 'rgba(54, 162, 235, 0.4)', borde: 'rgb(54, 162, 235)' },
-      { fondo: 'rgba(255, 206, 86, 0.4)', borde: 'rgb(255, 206, 86)' }
-    ][index];
+      // === Gráfico de barras compacto ===
+      const ctx = div.querySelector(`#graficoTopBar${index + 1}`).getContext('2d');
+      const color = [
+        { fondo: 'rgba(255, 99, 132, 0.4)', borde: 'rgb(255, 99, 132)' },
+        { fondo: 'rgba(54, 162, 235, 0.4)', borde: 'rgb(54, 162, 235)' },
+        { fondo: 'rgba(255, 206, 86, 0.4)', borde: 'rgb(255, 206, 86)' }
+      ][index];
 
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Puntualidad', 'Trato', 'Resolución'],
-        datasets: [{
-          label: `${entry.nombre}`,
-          data: [
-            entry.promedio_puntualidad || 0,
-            entry.promedio_trato || 0,
-            entry.promedio_resolucion || 0
-          ],
-          backgroundColor: color.fondo,
-          borderColor: color.borde,
-          borderWidth: 1,
-          borderRadius: 6,
-          maxBarThickness: 30
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: true }
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Puntualidad', 'Trato', 'Resolución'],
+          datasets: [{
+            label: `${entry.nombre}`,
+            data: [
+              entry.promedio_puntualidad || 0,
+              entry.promedio_trato || 0,
+              entry.promedio_resolucion || 0
+            ],
+            backgroundColor: color.fondo,
+            borderColor: color.borde,
+            borderWidth: 1,
+            borderRadius: 6,
+            maxBarThickness: 30
+          }]
         },
-        layout: { padding: { top: 6, right: 6, bottom: 2, left: 6 } },
-        scales: {
-          x: {
-            ticks: {
-              color: '#1f2937',
-              font: { size: 11, weight: '600' }
-            },
-            grid: { display: false }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
           },
-          y: {
-            min: 0,
-            max: 5,
-            ticks: { stepSize: 1, font: { size: 10 } },
-            grid: { color: 'rgba(0,0,0,0.08)' }
+          layout: { padding: { top: 6, right: 6, bottom: 2, left: 6 } },
+          scales: {
+            x: {
+              ticks: {
+                color: '#1f2937',
+                font: { size: 11, weight: '600' }
+              },
+              grid: { display: false }
+            },
+            y: {
+              min: 0,
+              max: 5,
+              ticks: { stepSize: 1, font: { size: 10 } },
+              grid: { color: 'rgba(0,0,0,0.08)' }
+            }
           }
         }
-      }
-    });
+      });
 
-    // Activar rotación al hacer click
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const inner = card.querySelector('.card-inner');
-        inner.classList.toggle('rotated');
+      // Activar rotación al hacer click
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const inner = card.querySelector('.card-inner');
+          inner.classList.toggle('rotated');
+        });
       });
     });
-  });
-} catch (err) {
-  console.error(err);
-  alert("Error al obtener estadísticas TOP.");
-}
+  } catch (err) {
+    console.error(err);
+    alert("Error al obtener estadísticas TOP.");
+  }
 
   // try {
   //   const res = await fetch('/api/estadisticas/top3', { credentials: 'include' });
@@ -194,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //         elements: { line: { borderWidth: 1 } },
   //         plugins: { legend: { display: false } },
   //         responsive: true,
-          
+
   //         scales: {
   //           r: {
   //             min: 0, max: 5, stepSize: 1,
@@ -242,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 🔽 Mostrar mensajes motivacionales con OpenAI
-    if(detalle.promedio_puntualidad != null && detalle.promedio_trato != null && detalle.promedio_resolucion != null){
+    if (detalle.promedio_puntualidad != null && detalle.promedio_trato != null && detalle.promedio_resolucion != null) {
       mostrarMensajesMotivacionales(detalle);
     }
 
